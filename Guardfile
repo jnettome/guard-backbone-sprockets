@@ -1,16 +1,16 @@
-notification :terminal_notifier_guard
+require "coffee_script"
+require "eco"
 
-guard :shell do
-  watch %r{Pricing/Cotador/Content/assets/.+\.(eco|js|coffee)} do |m|
-    compile = system('sprockets -I../jmseg-pricing/Pricing/Cotador/Content/assets/javascripts -I../jmseg-pricing/Pricing/Cotador/Content/assets/templates ../jmseg-pricing/Pricing/Cotador/Content/assets/javascripts/application.js.coffee > ../jmseg-pricing/Pricing/Cotador/Content/js/application.js')
-    move = system('cp ../jmseg-pricing/Pricing/Cotador/Content/js/application.js /Volumes/Projects/jmseg-pricing/Pricing/Cotador/Content/js/')
+notification :growl
 
-    if (compile) && move
-      n "Build and move done", "Success", :success
-    elsif (compile) && !move
-      n "Sorry, I can\'t move application.js", "Error on Move", :warning
-    else
-      n "See terminal for output", "Error on Build", :failed
-    end
+guard :sprockets, :destination => "/Volumes/Projects/jmseg-pricing/Pricing/Cotador/Content/js/", :asset_paths => ["../jmseg-pricing/Pricing/Cotador/Content/assets/templates", "../jmseg-pricing/Pricing/Cotador/Content/assets/javascripts"] do
+  watch (%r{Pricing/Cotador/Content/assets/.*}) do |m|
+    "application.js"
+  end
+end
+
+guard :sprockets, :destination => "/Volumes/Projects/jmseg-pricing/Pricing/Pricing/Content/js/", :asset_paths => ["../jmseg-pricing/Pricing/Pricing/Content/assets/templates", "../jmseg-pricing/Pricing/Pricing/Content/assets/javascripts"] do
+  watch (%r{Pricing/Pricing/Content/assets/.*}) do |m|
+    "application.js"
   end
 end
